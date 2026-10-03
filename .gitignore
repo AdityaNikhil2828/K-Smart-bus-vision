@@ -1,0 +1,19 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# YOLO model weights (large, auto-downloaded on first run)
+models/*.pt
+
+# Generated/test data
+data/*.db
+data/test_people.jpg
+data/yolo_test_result.jpg
+
+# Editor/OS clutter
+.vscode/
+.DS_Store
+
+# Ultralytics runtime settings
+runs/

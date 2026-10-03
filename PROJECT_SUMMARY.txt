@@ -1,0 +1,118 @@
+SMART BUS VISION — PROJECT SUMMARY
+====================================
+A prototype system for live in-bus CCTV crowd detection, built incrementally
+as a learning project. A webcam simulates a bus-mounted CCTV camera; YOLO
+detects and counts people; occupancy and crowd level are computed and served
+through a web dashboard, alongside bus lookup, route search, and live
+location tracking.
+
+STATUS: Core prototype complete (Phases 1–15). Phase 16 (shade-side
+suggestion) is designed but not yet implemented — see "Future Work" below.
+
+
+TECH STACK
+----------
+- Computer vision : Python, OpenCV, Ultralytics YOLO (yolov8n, COCO 'person' class)
+- Backend         : FastAPI + Uvicorn
+- Database        : SQLite
+- Frontend        : HTML, CSS, vanilla JavaScript, Leaflet.js (OpenStreetMap)
+- Location        : Browser Geolocation API (stand-in for a GPS module)
+- Remote access   : ngrok (for demoing outside the local network)
+
+
+ARCHITECTURE
+------------
+USB Webcam
+    -> camera.py     (background thread: reads frames, tracks online/offline)
+    -> detector.py   (YOLO person detection, confidence-filtered, draws boxes)
+    -> crowd.py      (median-smoothed count -> occupancy % -> crowd level)
+    -> database.py   (SQLite: bus_number, route, capacity, camera_id, status;
+                       smart normalization e.g. "kl151234" -> "KL-15-1234";
+                       direction-flexible route search)
+    -> location.py   (live GPS from the viewing device's browser, with a
+                       route-based estimated fallback when no live fix exists)
+    -> main.py       (FastAPI: bus lookup, route search, location updates,
+                       MJPEG video stream, static frontend)
+    -> frontend/     (dashboard: search by bus number or route, live video,
+                       stats panel, live map, pulsing LIVE indicator)
+
+
+FEATURES IMPLEMENTED (BY PHASE)
+--------------------------------
+ 1. Webcam access verification
+ 2. YOLO installation and single-image test
+ 3. Live person detection with bounding boxes
+ 4. Occupancy % calculation + 4-level crowd classification (configurable
+    thresholds), with median smoothing to reduce flicker
+ 5. FastAPI backend skeleton
+ 6. Live MJPEG video streaming, with camera auto-reconnect on disconnect
+ 7. SQLite bus database (3 sample buses)
+ 8. Bus-number search API, combining live camera state + database + occupancy
+ 9. Web dashboard matching the original spec's mockup
+10. Full integration review
+11. Full system test, including simulated camera and YOLO failures
+    (both degrade gracefully without crashing the server)
+12. Polish: live-updating stats, pulsing "LIVE" indicator, loading spinner
+13. Smart bus number normalization (case/spacing/dash-insensitive input)
+14. Search by route (case-insensitive, direction-flexible word matching)
+15. Live location tracking via the browser's Geolocation API, with a
+    Leaflet map; buses without a live fix show a clearly-labeled
+    route-based estimated position instead
+
+
+ERROR HANDLING VERIFIED
+------------------------
+- Camera disconnected      -> reports OFFLINE, auto-recovers, server stays up
+- Unknown bus number       -> HTTP 404 "Bus not found. Please check the bus number."
+- YOLO model unavailable   -> video keeps streaming without boxes,
+                               detector_error field surfaces the failure,
+                               server does not crash
+- No route match           -> HTTP 404 "No buses found on that route."
+
+
+PRIVACY & SECURITY NOTES (per original design constraints)
+------------------------------------------------------------
+- No facial recognition; only bounding-box person detection/counting
+- No individual identity tracking across frames
+- Raw video is not persisted to disk
+- This prototype has NO authentication and is not encrypted by default;
+  it is safe on a private LAN, but MUST NOT be exposed to the public
+  internet without adding authentication, HTTPS, and access control first
+  (the ngrok tunnel used for demos should be stopped when not actively
+  in use, since it exposes the live video feed to anyone with the link)
+
+
+KNOWN LIMITATIONS
+------------------
+- Runs on CPU only in this environment (NVIDIA GPU present but driver
+  not installed); achieves ~30 FPS on yolov8n regardless
+- All 3 sample buses share one physical webcam; only the bus matching
+  ACTIVE_CAMERA_ID ("camera_01") shows a real live feed and live GPS fix
+- Occasional false-positive detections of people in posters/photos in
+  the camera's field of view; mitigated via confidence threshold tuning
+- Location simulation for non-active buses is a straight-line midpoint
+  estimate between route endpoints, not a real-time simulation of motion
+
+
+FUTURE WORK
+------------
+Phase 16 (designed, not yet built): suggest which side of the bus (left/
+right) is shadier, based on the bus's direction of travel (heading, from
+Phase 15) compared against the sun's real-time azimuth for that location
+and time (via the `astral` Python library).
+
+Longer-term ideas from the original spec, deliberately out of scope for
+this prototype: multiple real cameras/buses, RTSP/IP camera support
+(camera.py is already structured to accept this), historical crowd
+statistics, passenger reporting, operator dashboard, Raspberry Pi/Jetson
+edge deployment, proper cloud architecture with authentication.
+
+
+HOW TO RUN
+-----------
+1. cd smart_bus_vision
+2. source venv/bin/activate
+3. uvicorn backend.main:app --host 0.0.0.0 --port 8000 --timeout-graceful-shutdown 3
+4. Open http://localhost:8000 in a browser
+5. (Optional, for access outside the local network) in a second terminal:
+   ngrok http 8000

@@ -1,0 +1,214 @@
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  background: #0f1115;
+  color: #e6e6e6;
+}
+
+.header {
+  background: #14181f;
+  padding: 16px 24px;
+  border-bottom: 2px solid #2a2f3a;
+}
+.header h1 { margin: 0; font-size: 1.4rem; }
+
+.container {
+  max-width: 640px;
+  margin: 24px auto;
+  padding: 0 16px;
+}
+
+.search-box {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.search-box input {
+  flex: 1;
+  padding: 10px 12px;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #333;
+  background: #1b1f27;
+  color: #fff;
+}
+.search-box button {
+  padding: 10px 18px;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  background: #3b82f6;
+  color: white;
+  cursor: pointer;
+}
+.search-box button:hover { background: #2563eb; }
+
+.error-msg {
+  background: #3a1d1d;
+  border: 1px solid #7a2a2a;
+  color: #ff9d9d;
+  padding: 10px 14px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+}
+
+.bus-card {
+  background: #171b22;
+  border: 1px solid #2a2f3a;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: #1b202a;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.video-wrap {
+  position: relative;
+  background: #000;
+  aspect-ratio: 4 / 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.video-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.camera-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.75);
+  font-size: 1.1rem;
+  color: #ff6b6b;
+  font-weight: 600;
+}
+
+.stats { padding: 8px 16px 16px; }
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #23283350;
+  font-size: 0.95rem;
+}
+.stat-row:last-child { border-bottom: none; }
+.stat-row span:first-child { color: #9aa4b2; }
+.stat-row span:last-child { font-weight: 600; }
+
+.hidden { display: none !important; }
+
+/* Crowd level colors, set via JS by adding a class to #crowdOut */
+.crowd-LOW           { color: #22c55e; }
+.crowd-MODERATE      { color: #eab308; }
+.crowd-CROWDED       { color: #f97316; }
+.crowd-VERY_CROWDED  { color: #ef4444; }
+
+/* ---------- Phase 12: polish ---------- */
+
+/* Loading spinner shown while the video/stats are being fetched */
+.loading-spinner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.loading-spinner::after {
+  content: "";
+  width: 36px;
+  height: 36px;
+  border: 4px solid #333a47;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Pulsing dot next to "LIVE" */
+.live-dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #22c55e;
+  margin-right: 6px;
+  vertical-align: middle;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.55); }
+  70%  { box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+}
+
+/* ---------- Phase 13: normalization preview ---------- */
+.search-input-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.normalized-preview {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin-top: 4px;
+  min-height: 1em;
+}
+.normalized-preview.match {
+  color: #22c55e;
+}
+
+/* ---------- Phase 14: route search ---------- */
+.route-search-box {
+  margin-top: -4px;
+}
+
+.route-results {
+  background: #171b22;
+  border: 1px solid #2a2f3a;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+.route-result-item {
+  padding: 12px 16px;
+  border-bottom: 1px solid #23283350;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.route-result-item:last-child { border-bottom: none; }
+.route-result-item:hover { background: #1f2530; }
+.route-result-item .bus-num { font-weight: 600; }
+.route-result-item .bus-route { color: #9aa4b2; font-size: 0.9rem; }
+
+/* ---------- Phase 15: live map ---------- */
+.map-container {
+  height: 220px;
+  border-top: 1px solid #2a2f3a;
+}
+#busMap {
+  height: 100%;
+  width: 100%;
+}
+.bus-arrow {
+  font-size: 22px;
+  transform-origin: center center;
+  transition: transform 0.3s ease;
+}

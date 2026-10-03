@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Smart Bus Vision</title>
+<link rel="stylesheet" href="/static/style.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+  <header class="header">
+    <h1>🚌 K-Smart Bus Vision</h1>
+  </header>
+
+  <main class="container">
+    <section class="search-box">
+      <div class="search-input-wrap">
+        <input id="busNumber" type="text" placeholder="Enter Bus Number e.g. KL-15-1234" value="KL-15-1234">
+        <span id="normalizedPreview" class="normalized-preview"></span>
+      </div>
+      <button id="searchBtn">SEARCH</button>
+    </section>
+
+    <section class="search-box route-search-box">
+      <input id="routeQuery" type="text" placeholder="Or search by route, e.g. Ernakulam Angamaly">
+      <button id="routeSearchBtn">SEARCH ROUTE</button>
+    </section>
+
+    <div id="routeResults" class="route-results hidden"></div>
+
+    <p id="errorMsg" class="error-msg hidden"></p>
+
+    <section id="resultCard" class="bus-card hidden">
+      <div class="card-header">
+        <span id="busNumberOut">BUS: --</span>
+        <span id="routeOut">ROUTE: --</span>
+      </div>
+
+      <div class="video-wrap">
+        <img id="videoFeed" src="" alt="Live CCTV feed">
+        <div id="loadingSpinner" class="loading-spinner"></div>
+        <div id="cameraOverlay" class="camera-overlay hidden">📷 CAMERA OFFLINE</div>
+      </div>
+
+      <div class="stats">
+        <div class="stat-row"><span>Passengers</span><span id="passengersOut">--</span></div>
+        <div class="stat-row"><span>Capacity</span><span id="capacityOut">--</span></div>
+        <div class="stat-row"><span>Occupancy</span><span id="occupancyOut">--</span></div>
+        <div class="stat-row"><span>Crowd</span><span id="crowdOut">--</span></div>
+        <div class="stat-row"><span>Camera</span><span id="cameraStatusOut">--</span></div>
+        <div class="stat-row"><span>Location</span><span id="locationOut">--</span></div>
+        <div class="stat-row"><span>Last Updated</span><span id="lastUpdatedOut">--</span></div>
+        <div class="map-container">
+           <div id="busMap"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="/static/script.js"></script>
+</body>
+</html>
