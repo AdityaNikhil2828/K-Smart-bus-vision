@@ -212,3 +212,17 @@ body {
   transform-origin: center center;
   transition: transform 0.3s ease;
 }
+
+/* ---------- Phase 16: shade suggestion ---------- */
+.shade-row span:last-child {
+  font-size: 0.9rem;
+}
+.shade-LEFT, .shade-RIGHT {
+  color: #fbbf24;
+}
+.shade-NEUTRAL {
+  color: #9aa4b2;
+}
+.shade-UNAVAILABLE {
+  color: #6b7280;
+}

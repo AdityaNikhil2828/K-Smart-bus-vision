@@ -1,25 +1,25 @@
 """
 main.py
 FastAPI backend for Smart Bus Vision.
-Phase 8: bus-number search using the SQLite database.
+Phase 16: bus-number search, route search, live location, and shade suggestion.
 """
 
 import sys
 from contextlib import asynccontextmanager
 from pathlib import Path
-from fastapi.staticfiles import StaticFiles
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from fastapi import FastAPI, HTTPException  # noqa: E402
 from fastapi.responses import FileResponse, HTMLResponse, StreamingResponse  # noqa: E402
-from pydantic import BaseModel
+from fastapi.staticfiles import StaticFiles  # noqa: E402
+from pydantic import BaseModel  # noqa: E402
 
-from location import location_tracker  # noqa: E402
 from camera import CameraStream  # noqa: E402
 from crowd import calculate_occupancy, classify_crowd  # noqa: E402
-from database import get_bus, init_db, list_buses  # noqa: E402
 from database import get_bus, init_db, list_buses, search_by_route  # noqa: E402
+from location import location_tracker  # noqa: E402
+from shade import suggest_shade_side  # noqa: E402
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 FRONTEND_DIR = PROJECT_ROOT / "frontend"
@@ -96,6 +96,7 @@ def bus_lookup(bus_number: str):
 
     is_active_bus = bus["camera_id"] == ACTIVE_CAMERA_ID
     loc = location_tracker.get(bus["route"], allow_live=is_active_bus)
+    shade = suggest_shade_side(loc["lat"], loc["lng"], loc["heading"])
 
     return {
         "bus_number": bus["bus_number"],
@@ -115,6 +116,10 @@ def bus_lookup(bus_number: str):
         "heading": loc["heading"],
         "speed": loc["speed"],
         "location_source": loc["location_source"],
+        "shade_side": shade["side"],
+        "shade_message": shade["message"],
+        "sun_azimuth": shade["sun_azimuth"],
+        "sun_elevation": shade["sun_elevation"],
     }
 
 

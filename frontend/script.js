@@ -19,6 +19,7 @@ const routeQuery = document.getElementById("routeQuery");
 const routeSearchBtn = document.getElementById("routeSearchBtn");
 const routeResults = document.getElementById("routeResults");
 const locationOut = document.getElementById("locationOut");
+const shadeOut = document.getElementById("shadeOut");
 
 let normalizeTimer = null;
 busInput.addEventListener("input", () => {
@@ -88,8 +89,9 @@ function renderBus(data) {
     loadingSpinner.classList.add("hidden");
   }
 
-  lastUpdatedOut.textContent = data.last_updated || "--";
+    lastUpdatedOut.textContent = data.last_updated || "--";
   renderLocation(data);
+  renderShade(data);
 }
 
 videoFeed.addEventListener("load", () => {
@@ -135,11 +137,17 @@ function startPolling(busNumber) {
           ? '<span class="live-dot"></span>LIVE'
           : "🔴 OFFLINE";
         cameraOverlay.classList.toggle("hidden", isLive);
-                lastUpdatedOut.textContent = data.last_updated || "--";
+                          lastUpdatedOut.textContent = data.last_updated || "--";
         renderLocation(data);
+        renderShade(data);
       })
       .catch(() => {});
   }, 2000);
+}
+
+function renderShade(data) {
+  shadeOut.textContent = data.shade_message || "--";
+  shadeOut.className = "shade-" + (data.shade_side || "UNAVAILABLE");
 }
 
 function stopPolling() {
