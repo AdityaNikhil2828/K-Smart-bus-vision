@@ -139,7 +139,7 @@ nvidia-nccl-cu13==2.30.7
 nvidia-nvjitlink==13.4.92
 nvidia-nvshmem-cu13==3.4.5
 nvidia-nvtx==13.0.85
-opencv-python==5.0.0.93
+opencv-python==4.10.0.84
 # Editable install with no version control (osrf-pycommon==2.1.7)
 -e /home/aditya/ros2_humble/build/osrf_pycommon
 packaging==26.3

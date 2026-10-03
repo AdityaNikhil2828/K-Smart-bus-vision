@@ -58,6 +58,16 @@ FEATURES IMPLEMENTED (BY PHASE)
 15. Live location tracking via the browser's Geolocation API, with a
     Leaflet map; buses without a live fix show a clearly-labeled
     route-based estimated position instead
+16. Shade-side suggestion: compares the bus's direction of travel
+    (heading, from Phase 15) against the sun's real-time azimuth and
+    elevation at the bus's location (via the `astral` library) to
+    suggest LEFT or RIGHT for shade, or NEUTRAL when the sun is roughly
+    ahead/behind or below the horizon
+17. Face blurring for privacy: detected faces within each person's
+    bounding box are blurred in the live video stream using OpenCV's
+    Haar Cascade face detector, before the frame is ever sent to the
+    browser (required downgrading opencv-python from 5.0.0 to 4.10.0.84,
+    since CascadeClassifier was unexpectedly missing from the newer build)    
 
 
 ERROR HANDLING VERIFIED
@@ -92,14 +102,15 @@ KNOWN LIMITATIONS
   the camera's field of view; mitigated via confidence threshold tuning
 - Location simulation for non-active buses is a straight-line midpoint
   estimate between route endpoints, not a real-time simulation of motion
-
+- Face blurring uses Haar Cascade, a lightweight but older face detector;
+  it reliably blurs front-facing, well-lit faces but may miss profile
+  views or poor lighting -- a production system would use a more robust
+  face detector for stronger privacy guarantees
 
 FUTURE WORK
 ------------
-Phase 16 (designed, not yet built): suggest which side of the bus (left/
-right) is shadier, based on the bus's direction of travel (heading, from
-Phase 15) compared against the sun's real-time azimuth for that location
-and time (via the `astral` Python library).
+Phases 16 and 17 (shade-side suggestion, face blurring) are both complete
+-- see "Features Implemented" above.
 
 Longer-term ideas from the original spec, deliberately out of scope for
 this prototype: multiple real cameras/buses, RTSP/IP camera support
